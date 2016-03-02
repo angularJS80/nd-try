@@ -4,7 +4,7 @@ MongoDB, Mongoose 와 Express 를 사용하여 간단한 RESTful API 를 구현�
 
 ```
 $ npm install
-$ node server.js
+$ node app.js
 ```
 
 ### API 목록
