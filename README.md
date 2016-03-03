@@ -19,4 +19,3 @@ $ node app.js
 | /api/books/:book_id       | DELETE | book 데이터 제거          |
 
 링크: https://velopert.com/594
-test
