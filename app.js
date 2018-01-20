@@ -30,7 +30,11 @@ app.use(bodyParser.json());
 var port = process.env.PORT || 8080;
 
 // [CONFIGURE ROUTER]
-var router = require('./routes')(app, Book);
+//var router = require('./routes')(app, Book);
+
+var bookRoute = require('./routes/route');
+app.use('/api', bookRoute);
+
 
 // [RUN SERVER]
 var server = app.listen(port, function(){
