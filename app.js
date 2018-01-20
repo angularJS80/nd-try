@@ -32,11 +32,18 @@ var port = process.env.PORT || 8080;
 // [CONFIGURE ROUTER]
 //var router = require('./routes')(app, Book);
 
-var bookRoute = require('./routes/route');
-app.use('/api', bookRoute);
+var bookRoute = require('./routes/bookRoute');
+var chatRoute = require('./routes/chatRoute');
+app.use('/api', [bookRoute,chatRoute]);
+
 
 
 // [RUN SERVER]
 var server = app.listen(port, function(){
  console.log("Express server has started on port " + port)
 });
+
+const SocketIo = require('socket.io'); // 추가
+const socketEvents = require('./soket/chatsocket'); // 추가
+const io = new SocketIo(server); // socket.io와 서버 연결하는 부분
+socketEvents(io); // 아까 만든 이벤트 연결
