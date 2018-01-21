@@ -6,9 +6,9 @@ module.exports = function(io) {
         socket.on('disconnect', function() {
             console.log('User disconnected');
         });
-        socket.on('save-message', function (data) {
+        socket.on('add-msg', function (data) {
             console.log(data);
-            io.emit('new-message', { message: data });
+            io.emit('new-msg', data);
         });
     });
 }

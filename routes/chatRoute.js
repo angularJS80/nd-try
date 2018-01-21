@@ -10,9 +10,6 @@ router.use(function timeLog(req, res, next) {
 });
 
 
-
-
-
 // GET ALL BOOKS
 router.get('/chats', function(req,res){
     Chat.find(function(err, datas){
