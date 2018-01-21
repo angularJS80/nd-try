@@ -16,7 +16,7 @@ db.once('open', function(){
     console.log("Connected to mongod server");
 });
 
-mongoose.connect('mongodb://localhost/mongodb_tutorial');
+mongoose.connect('mongodb://localhost:5050/mongodb_tutorial');
 
 // DEFINE MODEL
 var Book = require('./models/book');
@@ -27,14 +27,19 @@ app.use(bodyParser.json());
 
 // [CONFIGURE SERVER PORT]
 
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || 38080;
 
 // [CONFIGURE ROUTER]
 //var router = require('./routes')(app, Book);
 
 var bookRoute = require('./routes/bookRoute');
 var chatRoute = require('./routes/chatRoute');
-app.use('/api', [bookRoute,chatRoute]);
+var streamRoute = require('./routes/streamRoute');
+app.use('/api', [
+    bookRoute
+    ,chatRoute
+    ,streamRoute
+]);
 
 
 
@@ -47,3 +52,5 @@ const SocketIo = require('socket.io'); // 추가
 const socketEvents = require('./soket/chatsocket'); // 추가
 const io = new SocketIo(server); // socket.io와 서버 연결하는 부분
 socketEvents(io); // 아까 만든 이벤트 연결
+
+

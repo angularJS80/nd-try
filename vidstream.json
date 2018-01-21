@@ -1,0 +1,10 @@
+{
+  "mode": "development",
+  "forceDownload": false,
+  "random": false,
+  "rootFolder": "/usr/local/nodepjt/mongoose_tutorial/upload/videos/",
+  "rootPath": "",
+  "server": "VidStreamer.js/0.1.4",
+  "maxAge": "3600",
+  "throttle": false
+}
