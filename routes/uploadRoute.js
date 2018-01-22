@@ -13,8 +13,7 @@ var storage = multer.diskStorage({
 });
 
 var upload = multer({storage: storage});
-
-router.post('/fileUpload', upload.single('uploadfile'), (req, res, next) => {
+router.post('/fileUpload', upload.single('file'), (req, res, next) => {
     console.log(req.file.filename);
     var uploadMongo = new UploadMongo();
     uploadMongo.filepath = 'upload/' + req.file.filename;
