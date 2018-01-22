@@ -16,17 +16,13 @@ db.once('open', function(){
     console.log("Connected to mongod server");
 });
 
-mongoose.connect('mongodb://localhost:5050/mongodb_tutorial');
-
-// DEFINE MODEL
-var Book = require('./models/book');
+mongoose.connect('mongodb://localhost/mongodb_tutorial');
 
 // [CONFIGURE APP TO USE bodyParser]
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // [CONFIGURE SERVER PORT]
-
 var port = process.env.PORT || 38080;
 
 // [CONFIGURE ROUTER]
@@ -35,13 +31,14 @@ var port = process.env.PORT || 38080;
 var bookRoute = require('./routes/bookRoute');
 var chatRoute = require('./routes/chatRoute');
 var streamRoute = require('./routes/streamRoute');
+var uploadRoute = require('./routes/uploadRoute');
+
 app.use('/api', [
     bookRoute
     ,chatRoute
     ,streamRoute
+    ,uploadRoute
 ]);
-
-
 
 // [RUN SERVER]
 var server = app.listen(port, function(){

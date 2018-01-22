@@ -3,13 +3,6 @@ var router = express.Router();
 var Chat = require('../models/chat');
 
 
-
-router.use(function timeLog(req, res, next) {
-    console.log('chatrout Time: ', Date.now());
-    next();
-});
-
-
 // GET ALL BOOKS
 router.get('/chats', function(req,res){
     Chat.find(function(err, datas){

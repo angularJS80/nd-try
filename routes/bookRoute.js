@@ -2,10 +2,6 @@ var express = require('express');
 var router = express.Router();
 var Book = require('../models/book');
 
-router.use(function timeLog(req, res, next) {
-    console.log('Time: ', Date.now());
-    next();
-});
 
 // GET ALL BOOKS
 router.get('/books', function(req,res){
