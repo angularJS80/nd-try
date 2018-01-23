@@ -5,8 +5,8 @@ var express     = require('express');
 var app         = express();
 var bodyParser  = require('body-parser');
 var mongoose    = require('mongoose');
-var cors = require('cors')();
 
+var cors = require('cors')();
 app.use(cors);
 
 // [ CONFIGURE mongoose ]
@@ -21,17 +21,12 @@ db.once('open', function(){
 
 mongoose.connect('mongodb://localhost/mongodb_tutorial');
 
-
-
-
 // [CONFIGURE APP TO USE bodyParser]
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-
 // [CONFIGURE SERVER PORT]
 var port = process.env.PORT || 38080;
-
 
 // [CONFIGURE ROUTER]
 //var router = require('./routes')(app, Book);
@@ -39,13 +34,14 @@ var port = process.env.PORT || 38080;
 var bookRoute = require('./routes/bookRoute');
 var chatRoute = require('./routes/chatRoute');
 var streamRoute = require('./routes/streamRoute');
-var uploadRoute = require('./routes/uploadRoute');
+var fileRoute = require('./routes/fileRoute');
+
 
 app.use('/api', [
     bookRoute
     ,chatRoute
     ,streamRoute
-    ,uploadRoute
+    ,fileRoute
 ]);
 
 // [RUN SERVER]

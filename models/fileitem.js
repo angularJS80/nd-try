@@ -2,7 +2,8 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 var uploadSchema = new Schema({
-    filepath: String
+    filepath: String,
+    filename: String
 });
 
 module.exports = mongoose.model('upload', uploadSchema);
