@@ -21,6 +21,9 @@ db.once('open', function(){
 
 mongoose.connect('mongodb://localhost/mongodb_tutorial');
 
+
+
+
 // [CONFIGURE APP TO USE bodyParser]
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());

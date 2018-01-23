@@ -6,3 +6,4 @@ var uploadSchema = new Schema({
 });
 
 module.exports = mongoose.model('upload', uploadSchema);
+
