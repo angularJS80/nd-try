@@ -36,13 +36,14 @@ var chatRoute = require('./routes/chatRoute');
 var streamRoute = require('./routes/streamRoute');
 var fileRoute = require('./routes/fileRoute');
 
-
 app.use('/api', [
     bookRoute
     ,chatRoute
     ,streamRoute
     ,fileRoute
 ]);
+
+app.use("/upload/", express.static(__dirname + '/upload/videos/thumbnail/'));
 
 // [RUN SERVER]
 var server = app.listen(port, function(){

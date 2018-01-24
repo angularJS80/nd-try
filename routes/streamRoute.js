@@ -5,5 +5,5 @@ var settings = require('../vidstream.json');
 
 
 // GET ALL BOOKSx
-router.use('/videos', vidStreamer.settings(settings));
+router.use('/videos/upload', vidStreamer.settings(settings));
 module.exports = router;

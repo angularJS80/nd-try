@@ -4,19 +4,26 @@ var FileItem = require('../models/fileitem');
 //var Seq = require('../models/seq');
 var multer = require('multer');
 var Ffmpeg = require('fluent-ffmpeg');
-
+var path = require('path');
 var fs = require("fs"); // 파일시스템 접근을 위한 모듈 호출
+var rootPath = path.join(__dirname, "../");
+var mime = require("mime-types"); // 파일시스템 접근을 위한 모듈 호출
+
+
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'upload')
     },
     filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now())
+        cb(null, file.fieldname + '-' + Date.now()+ '.' + mime.extension(file.mimetype) )
     }
 });
-var upload = multer({storage: storage});
 
+
+
+
+var upload = multer({storage: storage});
 // GET ALL BOOKS
 router.get('/fileList', function(req,res){
     FileItem.find(function(err, books){
@@ -26,27 +33,20 @@ router.get('/fileList', function(req,res){
 });
 
 makeThumbNail = function(file){
-    console.log("makeThumbNail");
-    console.log("/"+file.filepath);
-
-    Ffmpeg.setFfmpegPath('C:/Users/jcompia/WebstormProjects/mongoose_tutorial/ffmpeg/bin/ffmpeg.exe');
-    Ffmpeg.setFfprobePath('C:/Users/jcompia/WebstormProjects/mongoose_tutorial/ffmpeg/bin/ffprobe.exe');
-    Ffmpeg("C:/Users/jcompia/WebstormProjects/mongoose_tutorial/"+file.filepath)
+    Ffmpeg.setFfmpegPath(rootPath +"/ffmpeg/bin/ffmpeg.exe");
+    Ffmpeg.setFfprobePath(rootPath +"/ffmpeg/bin/ffprobe.exe");
+    Ffmpeg(rootPath+file.filepath)
         .screenshots({
             timestamps: [30.5, '50%', '01:10.123'],
-            filename: 'thumbnail-'+file.filename+'.png',
-            folder: 'C:/Users/jcompia/WebstormProjects/mongoose_tutorial/upload/videos/thumbnail/',
+            filename: file.filename+'.png',
+            folder: rootPath+'/upload/videos/thumbnail/',
             size: '320x240'
         });
 }
 
 router.post('/fileUpload', upload.single('file'), (req, res, next) => {
     var fileitem = new FileItem(req.file);
-    //var seq = new Seq();
-    //seq.insert({"_id":"seq_post", "seq":new NumberLong(1)});
     fileitem.filepath = 'upload/' + req.file.filename;
-
-    //fileitem.filename = req.file.filename()
     fileitem.save(function(err,result){
         if(err){
             console.error(err);
@@ -56,7 +56,6 @@ router.post('/fileUpload', upload.single('file'), (req, res, next) => {
         makeThumbNail(result);
         res.json(result);
     });
-
 });
 
 // DELETE BOOK
@@ -74,6 +73,5 @@ router.delete('/fileUpload/:file_id', function(req, res){
             });
         });
     })
-
 });
 module.exports = router;
