@@ -1,9 +1,11 @@
-Todo 현재 구현된 Spring 기반의 api 를 Node 기반으로 변경 예정
-기존 사용중인 셈플 API 제거
-이후 README.MD 새로운 프로젝트 정보로 업데이트
+
+angularTry2 프로젝트에서 사용가능한 Node 기반의 Rest Api 구성
+File uplaod / Video File Stream / Chat socket 기능을 추가
+각 기능은 ***Route.js 를 통해 접근 가능하며,
+각 ****Route.js 에서 db접근은 models 에 정의된 스키마를 이용한다.
 
 
-아래 사이트 참고 하였습니다.
+기초 골격은 아래 사이트 참고 하였습니다.
 ## RESTful API using MongoDB & Mongoose & Express
 VELOPERT 블로그에 작성한 강좌에 사용된 프로젝트 입니다.  
 MongoDB, Mongoose 와 Express 를 사용하여 간단한 RESTful API 를 구현합니다.  
