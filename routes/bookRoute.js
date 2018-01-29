@@ -2,7 +2,6 @@ var express = require('express');
 var router = express.Router();
 var Book = require('../models/book');
 
-
 // GET ALL BOOKS
 router.get('/books', function(req,res){
     Book.find(function(err, books){
@@ -34,16 +33,13 @@ router.post('/books', function(req, res){
     var book = new Book();
     book.title = req.body.title;
     book.author = req.body.author;
-
     book.published_date = new Date(req.body.published_date);
-
     book.save(function(err){
         if(err){
             console.error(err);
             res.json({result: 0});
             return;
         }
-
         res.json({result: 1});
 
     });

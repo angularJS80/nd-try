@@ -1,15 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var FileItem = require('../models/fileitem');
-//var Seq = require('../models/seq');
 var multer = require('multer');
 var Ffmpeg = require('fluent-ffmpeg');
 var path = require('path');
 var fs = require("fs"); // 파일시스템 접근을 위한 모듈 호출
 var rootPath = path.join(__dirname, "../");
 var mime = require("mime-types"); // 파일시스템 접근을 위한 모듈 호출
-
-
 
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -20,11 +17,8 @@ var storage = multer.diskStorage({
     }
 });
 
-
-
-
 var upload = multer({storage: storage});
-// GET ALL BOOKS
+// GET ALL FILELIST
 router.get('/fileList', function(req,res){
     FileItem.find(function(err, books){
         if(err) return res.status(500).send({error: 'database failure'});
@@ -33,8 +27,12 @@ router.get('/fileList', function(req,res){
 });
 
 makeThumbNail = function(file){
-    Ffmpeg.setFfmpegPath(rootPath +"/ffmpeg/bin/ffmpeg.exe");
-    Ffmpeg.setFfprobePath(rootPath +"/ffmpeg/bin/ffprobe.exe");
+    //Ffmpeg.setFfmpegPath(rootPath +"/ffmpeg/bin/ffmpeg.exe");
+    //Ffmpeg.setFfprobePath(rootPath +"/ffmpeg/bin/ffprobe.exe");
+    //Ffmpeg.setFfmpegPath(rootPath +"ffmpeg/ffmpeg");
+    //Ffmpeg.setFfprobePath(rootPath +"ffmpeg/ffprobe");
+
+
     Ffmpeg(rootPath+file.filepath)
         .screenshots({
             timestamps: [30.5, '50%', '01:10.123'],
@@ -43,7 +41,7 @@ makeThumbNail = function(file){
             size: '320x240'
         });
 }
-
+// UPLOAD FILE
 router.post('/fileUpload', upload.single('file'), (req, res, next) => {
     var fileitem = new FileItem(req.file);
     fileitem.filepath = 'upload/' + req.file.filename;
@@ -58,9 +56,8 @@ router.post('/fileUpload', upload.single('file'), (req, res, next) => {
     });
 });
 
-// DELETE BOOK
+// DELETE FILE
 router.delete('/fileUpload/:file_id', function(req, res){
-   console.log("test");
     FileItem.findOne({_id: req.params.file_id}, function(err, fileitem){
         if(err) return res.status(500).json({error: err});
         if(!fileitem) return res.status(404).json({error: 'file not found'});
@@ -69,7 +66,8 @@ router.delete('/fileUpload/:file_id', function(req, res){
             // 삭제가 완료되면 여기가 실행됩니다.
             FileItem.remove({"_id":req.params.file_id}, function(err){ // MongoDB 에서 파일 정보 삭제하기​
                 if(err) res.send(err); // 에러 확인
-                res.end("ok"); // 응답
+                res.json(req.params.file_id);// 응답
+
             });
         });
     })

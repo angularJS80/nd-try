@@ -8,9 +8,7 @@ var mongoose    = require('mongoose');
 
 var cors = require('cors')();
 app.use(cors);
-
 // [ CONFIGURE mongoose ]
-
 // CONNECT TO MONGODB SERVER
 var db = mongoose.connection;
 db.on('error', console.error);
@@ -19,7 +17,7 @@ db.once('open', function(){
     console.log("Connected to mongod server");
 });
 
-mongoose.connect('mongodb://localhost/mongodb_tutorial');
+mongoose.connect('mongodb://localhost:5050/mongodb_tutorial');
 
 // [CONFIGURE APP TO USE bodyParser]
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -43,7 +41,7 @@ app.use('/api', [
     ,fileRoute
 ]);
 
-app.use("/upload/", express.static(__dirname + '/upload/videos/thumbnail/'));
+app.use("/api/upload/", express.static(__dirname + '/upload/videos/thumbnail/'));
 
 // [RUN SERVER]
 var server = app.listen(port, function(){

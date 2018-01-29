@@ -1,8 +1,9 @@
+
 {
   "mode": "development",
   "forceDownload": false,
   "random": false,
-  "rootFolder": "C:/Users/jcompia/WebstormProjects/mongoose_tutorial/upload/",
+  "rootFolder": "resetting rootFolder",
   "rootPath": "",
   "server": "VidStreamer.js/0.1.4",
   "maxAge": "3600",
