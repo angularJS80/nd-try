@@ -27,11 +27,9 @@ router.get('/fileList', function(req,res){
 });
 
 makeThumbNail = function(file){
+    // 아래 주석은 윈도우 기반에서 활성화 한다.
     //Ffmpeg.setFfmpegPath(rootPath +"/ffmpeg/bin/ffmpeg.exe");
     //Ffmpeg.setFfprobePath(rootPath +"/ffmpeg/bin/ffprobe.exe");
-    //Ffmpeg.setFfmpegPath(rootPath +"ffmpeg/ffmpeg");
-    //Ffmpeg.setFfprobePath(rootPath +"ffmpeg/ffprobe");
-
 
     Ffmpeg(rootPath+file.filepath)
         .screenshots({
