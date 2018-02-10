@@ -49,6 +49,7 @@ router.post('/fileUpload', upload.single('file'), (req, res, next) => {
             res.json({result: 0});
             return;
         }
+        // 동영상일때만 썸네일 생성하도록 변경
         makeThumbNail(result);
         res.json(result);
     });

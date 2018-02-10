@@ -22,22 +22,24 @@ db.once('open', function(){
 // CONNECT TO MONGODB SERVER
 mongoose.connect('mongodb://localhost:5050/mongodb_tutorial');
 
-// [CONFIGURE ROUTER]
-app.use('/api', [
-    require('./routes/bookRoute')
-    ,require('./routes/chatRoute')
-    ,require('./routes/streamRoute')
-    ,require('./routes/fileRoute')
-]);
 
 // [CONFIGURE SERVER PORT]
 var port = process.env.PORT || 38080; // [CONFIGURE SERVER PORT]
 // [RUN SERVER]
 var server = app.listen(port, function(){
- console.log("Express server has started on port " + port)
+    console.log("Express server has started on port " + port)
 });
 
 const SocketIo = require('socket.io'); // 추가
 const socketEvents = require('./soket/chatsocket'); // 추가
 const io = new SocketIo(server); // socket.io와 서버 연결하는 부분
 socketEvents(io); // 아까 만든 이벤트 연결
+
+// [CONFIGURE ROUTER]
+app.use('/api', [
+    require('./routes/bookRoute')
+    ,require('./routes/chatRoute')
+    ,require('./routes/streamRoute')
+    ,require('./routes/fileRoute')
+    ,require('./routes/utbRoute')(io)
+]);

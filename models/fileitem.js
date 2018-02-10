@@ -9,7 +9,7 @@ var uploadSchema = new Schema({
     encoding: String,
     mimetype: String,
     destination: String,
-    size: Number
+    size: Number,
 });
 
 module.exports = mongoose.model('upload', uploadSchema);
