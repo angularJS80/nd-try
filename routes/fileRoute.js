@@ -33,7 +33,8 @@ makeThumbNail = function(file){
 
     Ffmpeg(rootPath+file.filepath)
         .screenshots({
-            timestamps: [30.5, '50%', '01:10.123'],
+            //timestamps: [30.5, '50%', '01:10.123'],
+            timestamps: ['1%'],
             filename: file.filename+'.png',
             folder: rootPath+'/upload/videos/thumbnail/',
             size: '320x240'
