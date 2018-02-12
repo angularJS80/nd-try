@@ -81,9 +81,18 @@ console.log("makeThumnail");
                     size: '320x240'
                 });
         })
+
+        .on('start', function(commandLine) {
+            console.log('Spawned Ffmpeg with command: ' + commandLine);
+        })
         .on('progress', function(progress) {
-            console.log(progress);
-            console.log('% done');
+            console.log();
+
+            //console.log(progress.currentFps);
+            console.log("file.filename : "+file.filename+" progress.frames : "+progress.frames+" progress.currentKbps : "+progress.currentKbps+" , progress.targetSize : "+progress.targetSize);
+            //console.log(progress.targetSize);
+            //console.log(progress.timemark);
+
         });
 
     /* 인코딩된 파일은 다시 디비에 신규 등록 처리 */
@@ -98,8 +107,6 @@ console.log("makeThumnail");
         }
     });
 
-
-
 }
 
 // CREATE BOOK
@@ -113,6 +120,7 @@ router.post('/utbupload', function(req, res){
 
 
     var dataLensum = 0;
+    var percentage = 0;
     ytdl(req.body.utburl)
         .on('response', function(res){
                 var ProgressBar = require('progress');
@@ -120,17 +128,20 @@ router.post('/utbupload', function(req, res){
                     complete : String.fromCharCode(0x2588),
                     total    : parseInt(res.headers['content-length'], 10)
                 });
-
         })
         .on( 'data', function(data){
                     //bar.tick(data.length);
             dataLensum += data.length
             //console.log((100*dataLensum/bar.total).toString());
-            //console.log(req.body.file_id);
-            io.emit('new-prog-msg'+req.body.file_id, {
-                file_id:req.body.file_id,
-                percentage:(100*dataLensum/bar.total).toString()
-            });
+            if(percentage != parseInt(100*dataLensum/bar.total).toString()){
+                percentage = parseInt(100*dataLensum/bar.total).toString()
+                console.log(req.body.file_id+" : "+percentage);
+
+                io.emit('new-prog-msg'+req.body.file_id,
+                    //file_id:req.body.file_id,
+                    percentage
+                );
+            }
         })
         .on( 'finish', function(){
             FileItem.findById(req.body.file_id, (err, fItem) => {
