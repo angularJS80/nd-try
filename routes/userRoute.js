@@ -1,64 +1,39 @@
-/**
- * Created by jcompia on 2018-01-30.
- */
-var express = require('express');
-var router = express.Router();
-var User = require('./../model/user.js');
-var jwt = require('jsonwebtoken');
-var jwt_secret = 'secret';
-router.get('/', function(req, res, next){
-    res.send('respond with a resource');
-});
-router.post('/authenticate', function(req, res){
-    User.findOne({email: req.body.email, password: req.body.password}, function(err, user){
-        if(err) {
-            res.json({
-                type: false,
-                data: 'Error occured' + err
-            });
-        } else {
-            if (user) {
-                res.json({
-                    type: true,
-                    data: user,
-                    token: user.token,
-                });
-            } else {
-                res.json({
-                    type: false,
-                    data: 'Incorrect email/password'
-                })
-            }
-        }
+let express = require('express');
+let router = express.Router();
+let jwt = require('jsonwebtoken');
+let User = require('../models/user');
+
+router.post('/register', function(req, res){
+    let user = new User({
+        username: req.body.username,
+        password: req.body.password
     });
+    user.save(function(err, data){
+        if(err){
+            return res.json({error: true});
+        }
+        res.json({error:false});
+    })
 });
 
-router.get('/me', ensureAuthorized, function(req, res){
-    User.findOne({token: req.token}, function(err, user){
-        if(err) {
-            res.json({
-                type: false,
-                data: 'Error occured: ' + err,
-            });
-        } else {
-            console.log('me: ' + user);
-            res.json({
-                type: true,
-                data: suer,
-            });
+router.post('/authenticate', function(req, res){
+    let data = {
+        username: req.body.username,
+        password: req.body.password
+    };
+    User.findOne(data).lean().exec(function(err, user){
+        if(err){
+            return res.json({error: true});
         }
-    });
+        if(!user){
+            return res.status(404).json({'message':'User not found!'});
+        }
+        console.log(user);
+        let token = jwt.sign(user, global.config.jwt_secret, {
+            expiresIn: 1440 // expires in 1 hour
+        });
+        res.json({error:false, token: token});
+    })
 });
-function ensureAuthorized(req, res, next) {
-    var bearerToken;
-    var bearerHeader = req.headers["authorization"];
-    if (typeof bearerHeader !== 'undefined') {
-        var bearer = bearerHeader.split(' ');
-        bearerToken = bearer[1];
-        req.token = bearerToken;
-        next();
-    } else {
-        res.send(403);
-    }
-}
+
 module.exports = router;

@@ -35,11 +35,20 @@ const socketEvents = require('./soket/chatsocket'); // 추가
 const io = new SocketIo(server); // socket.io와 서버 연결하는 부분
 socketEvents(io); // 아까 만든 이벤트 연결
 
+global.config = require('./middleware/config');
+let verifyToken = require('./middleware/verifytoken');
+
+
 // [CONFIGURE ROUTER]
-app.use('/api', [
-    require('./routes/bookRoute')
+app.use('/api', [verifyToken,[
+     require('./routes/bookRoute')
     ,require('./routes/chatRoute')
     ,require('./routes/streamRoute')
     ,require('./routes/fileRoute')
     ,require('./routes/utbRoute')(io)
-]);
+]]);
+
+app.use('/openapi',
+    require('./routes/userRoute')
+);
+
