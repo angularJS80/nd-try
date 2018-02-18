@@ -47,14 +47,39 @@ console.log("makeThumnail");
 }
 
 makeEncodeVideo = function(file){
+
+
     console.log(file.filepath)
     file.filename = file.id +".avi"
-    var command =  Ffmpeg(rootPath+file.filepath)
-        .videoCodec('libxvid')
-        //.videoCodec('libx264')
 
-        //    .format('mp4');
-        .format('avi');
+    var fileitem = new FileItem();
+    fileitem.originalname = "encXvid"+file.filename
+    fileitem.filename = file.filename
+    fileitem.filepath = 'upload/encode-xvid-640_480/' + file.filename;
+    fileitem.save(function(err,result){
+        if(err){
+            console.error(err);
+            return;
+        }
+    });
+
+
+    var percentage = 0;
+
+    var infs = fs.createReadStream(rootPath+file.filepath);
+    //var self = this;
+    var command = Ffmpeg(infs)
+var command =  Ffmpeg(rootPath+file.filepath)
+    var endTime = "";
+    var percentage = "0";
+    command.clone()
+        .ffprobe(0,function(err, data) {
+            console.log("err" + err);
+            console.log("data" + data.streams[0].duration);
+            endTime = data.streams[0].duration;
+            //console.log('file1 metadata:');
+            //console.dir(data);
+        });
 
     http://localhost:38080/api/upload/encode-xvid-640_480/5a7ed772d5960c028fb83f91.mp4_1.png
         /*
@@ -62,13 +87,13 @@ makeEncodeVideo = function(file){
          .size('320x200')
          .save(rootPath+'/upload/videos/output-small.mp4');*/
         command.clone()
+            .videoCodec('libxvid')
+            .format('avi')
             .size('720x480')
             .addOption('-qscale', '5') // xvid 인코딩시 엄청깨짐으로 이옵션을 꼭줘야 함.
             .autopad ( 'black' )
             //.inputFPS(29.7)
             //.outputFps(24)
-
-            .save(rootPath+'/upload/encode-xvid-640_480/'+file.filename)
             .on('end', function(stdout, stderr) {
                 console.log('Transcoding succeeded !');
                 Ffmpeg(rootPath+'/upload/encode-xvid-640_480/'+file.filename)
@@ -84,27 +109,40 @@ makeEncodeVideo = function(file){
             .on('start', function(commandLine) {
                 console.log('Spawned Ffmpeg with command: ' + commandLine);
             })
+            //.preset('flashvideo')
             .on('progress', function(progress) {
-                console.log();
+                if(percentage != parseInt(progress.percent).toString()){
+                    percentage = parseInt(progress.percent).toString()
+                    console.log(fileitem._id+" : "+percentage);
+                    io.emit('new-prog-msg'+fileitem._id,
+                        //file_id:req.body.file_id,
+                        percentage
+                    );
+                }
 
-                //console.log(progress.currentFps);
-                console.log("file.filename : "+file.filename+" progress.frames : "+progress.frames+" progress.currentKbps : "+progress.currentKbps+" , progress.targetSize : "+progress.targetSize);
-                //console.log(progress.targetSize);
-                //console.log(progress.timemark);
+            })
+            .save(rootPath+'/upload/encode-xvid-640_480/'+file.filename)
 
-            });
+        ;
+
+
+/*
+    var ffstream = command.pipe();
+    ffstream.on('data', function(chunk) {
+        console.log('ffmpeg just wrote ' + chunk.length + ' bytes');
+        /!*if(percentage != parseInt(100*dataLensum/bar.total).toString()){
+            percentage = parseInt(100*dataLensum/bar.total).toString()
+            console.log(file.file_id+" : "+percentage);
+
+            io.emit('new-prog-msg'+file.file_id,
+                //file_id:req.body.file_id,
+                percentage
+            );
+        }*!/
+    });*/
 
     /* 인코딩된 파일은 다시 디비에 신규 등록 처리 */
-    var fileitem = new FileItem();
-    fileitem.originalname = "encXvid"+file.filename
-    fileitem.filename = file.filename
-    fileitem.filepath = 'upload/encode-xvid-640_480/' + file.filename;
-    fileitem.save(function(err,result){
-        if(err){
-            console.error(err);
-            return;
-        }
-    });
+
 }
 
 
