@@ -13,13 +13,11 @@ var FileItem = require('../models/fileitem');
 module.exports = function(io) {
 
 
-
+/*
 // GET BOOK BY AUTHOR
 router.get('/createFileId', function(req, res){
-
     var fileitem = new FileItem();
     fileitem.save(function(err,result){
-
         if(err){
             console.log("createFileId");
             console.error(err);
@@ -28,7 +26,7 @@ router.get('/createFileId', function(req, res){
         }
         res.json(result);
     });
-});
+});*/
 
 makeThumbNail = function(file){
     // 아래 주석은 윈도우 기반에서 활성화 한다.
@@ -46,30 +44,13 @@ console.log("makeThumnail");
 
 }
 
-makeEncodeVideo = function(file){
-
-
-    console.log(file.filepath)
-    file.filename = file.id +".avi"
-
-    var fileitem = new FileItem();
-    fileitem.originalname = "encXvid"+file.filename
-    fileitem.filename = file.filename
-    fileitem.filepath = 'upload/encode-xvid-640_480/' + file.filename;
-    fileitem.save(function(err,result){
-        if(err){
-            console.error(err);
-            return;
-        }
-    });
-
+makeEncodeVideo = function(sorcefile,targetitem){
 
     var percentage = 0;
-
-    var infs = fs.createReadStream(rootPath+file.filepath);
+    var infs = fs.createReadStream(rootPath+sorcefile.filepath);
     //var self = this;
     var command = Ffmpeg(infs)
-var command =  Ffmpeg(rootPath+file.filepath)
+    var command =  Ffmpeg(rootPath+sorcefile.filepath)
     var endTime = "";
     var percentage = "0";
     command.clone()
@@ -80,7 +61,6 @@ var command =  Ffmpeg(rootPath+file.filepath)
             //console.log('file1 metadata:');
             //console.dir(data);
         });
-
     http://localhost:38080/api/upload/encode-xvid-640_480/5a7ed772d5960c028fb83f91.mp4_1.png
         /*
          command.clone()
@@ -96,11 +76,11 @@ var command =  Ffmpeg(rootPath+file.filepath)
             //.outputFps(24)
             .on('end', function(stdout, stderr) {
                 console.log('Transcoding succeeded !');
-                Ffmpeg(rootPath+'/upload/encode-xvid-640_480/'+file.filename)
+                Ffmpeg(rootPath+'/upload/encode-xvid-640_480/'+targetitem.filename)
                     .screenshots({
                         //timestamps: [30.5, '50%', '01:10.123'],
                         timestamps: ['1%'],
-                        filename: file.filename+'.png',
+                        filename: targetitem.filename+'.png',
                         folder: rootPath+'/upload/videos/thumbnail/encode-xvid-640_480/',
                         size: '320x240'
                     });
@@ -113,15 +93,15 @@ var command =  Ffmpeg(rootPath+file.filepath)
             .on('progress', function(progress) {
                 if(percentage != parseInt(progress.percent).toString()){
                     percentage = parseInt(progress.percent).toString()
-                    console.log(fileitem._id+" : "+percentage);
-                    io.emit('new-prog-msg'+fileitem._id,
+                    console.log(targetitem._id+" : "+percentage);
+                    io.emit('new-prog-msg'+targetitem._id,
                         //file_id:req.body.file_id,
                         percentage
                     );
                 }
 
             })
-            .save(rootPath+'/upload/encode-xvid-640_480/'+file.filename)
+            .save(rootPath+'/upload/encode-xvid-640_480/'+targetitem.filename)
 
         ;
 
@@ -148,77 +128,113 @@ var command =  Ffmpeg(rootPath+file.filepath)
 
 router.post('/encodeVideo', function(req, res) {
 
-    console.log(req.body);
-    var fileitem = new FileItem(req.body);
-    console.log(fileitem);
-    makeEncodeVideo(fileitem);
+    var sorcefile = new FileItem(req.body);
+    var targetitem = new FileItem();
+    targetitem.filename = sorcefile.id +".avi";
+    targetitem.originalname = "encXvid"+sorcefile.originalname
+    targetitem.filepath = 'upload/encode-xvid-640_480/' + targetitem.filename;
+    targetitem.save(function(err,result){
+        if(err){
+            console.error(err);
+            return;
+        }
+        res.json(result);
+        makeEncodeVideo(sorcefile,result);
+
+    });
+
 
 })
 
-// CREATE BOOK
-router.post('/utbupload', function(req, res){
-
-    var fileitem = new FileItem();
-    fileitem.filepath = 'upload/'+req.body.file_id+'.mp4';
-    fileitem.originalname = req.body.file_id+'.mp4';
-    fileitem.filename = req.body.file_id+'.mp4';
-
-
-
+var utbdownload = function(utburl,fileitem){
     var dataLensum = 0;
     var percentage = 0;
-    ytdl(req.body.utburl)
-        .on('response', function(res){
-                var ProgressBar = require('progress');
-                bar = new ProgressBar('downloading [:bar] :percent :etas', {
-                    complete : String.fromCharCode(0x2588),
-                    total    : parseInt(res.headers['content-length'], 10)
-                });
+
+
+    ytdl(utburl)
+        .on('response', function(utbres){
+            var ProgressBar = require('progress');
+            bar = new ProgressBar('downloading [:bar] :percent :etas', {
+                complete : String.fromCharCode(0x2588),
+                total    : parseInt(utbres.headers['content-length'], 10)
+            });
         })
         .on( 'data', function(data){
-                    //bar.tick(data.length);
+            //bar.tick(data.length);
             dataLensum += data.length
             //console.log((100*dataLensum/bar.total).toString());
             if(percentage != parseInt(100*dataLensum/bar.total).toString()){
                 percentage = parseInt(100*dataLensum/bar.total).toString()
-                console.log(req.body.file_id+" : "+percentage);
+                console.log(fileitem._id+" : "+percentage);
 
-                io.emit('new-prog-msg'+req.body.file_id,
+                io.emit('new-prog-msg'+fileitem._id,
                     //file_id:req.body.file_id,
                     percentage
                 );
             }
         })
         .on( 'finish', function(){
-            FileItem.findById(req.body.file_id, (err, fItem) => {
-                // Handle any possible database errors
-                if (err) {
-                    res.status(500).send(err);
-                } else {
-                    // Update each attribute with any possible attribute that may have been submitted in the body of the request
-                    // If that attribute isn't in the request body, default back to whatever it was before.
-                    fItem.filepath = fileitem.filepath;
-                    fItem.originalname = fileitem.originalname;
-                    fItem.filename = fileitem.filename;
-                    // Save the updated document back to the database
-                    fItem.save((err, fItem) => {
-                        if (err) {
-                            res.status(500).send(err)
-                        }
-                        makeThumbNail(fItem);
+            makeThumbNail(fileitem);
+            if(1==1){ // 업로드시 자동 인코딩 설정에 대한 부분
 
-                        if(0==1){ // 업로드시 자동 인코딩 설정에 대한 부분
-                            makeEncodeVideo(fItem)
-                        }
-                        res.status(200).send(fItem);
-                    });
-                }
-            });
-
-
+                var targetitem = new FileItem();
+                targetitem.filename = fileitem.id +".avi";
+                targetitem.originalname = "encXvid"+fileitem.originalname;
+                targetitem.filepath = 'upload/encode-xvid-640_480/' + targetitem.filename;
+                targetitem.save(function(err,result){
+                    if(err){
+                        console.error(err);
+                        return;
+                    }
+                    makeEncodeVideo(fileitem,result);
+                });
+            }
         })
-
         .pipe(fs.createWriteStream(fileitem.filepath));
+
+}
+
+// CREATE BOOK
+router.post('/utbupload', function(req, res){
+    var videoName = "";
+    console.log(req.body.utburl)
+        ytdl.getInfo(req.body.utburl, function(err, info){
+            videoName = info.title.replace('|','').toString('ascii');
+            var tempfile = new FileItem();
+            tempfile.originalname = videoName;
+
+            tempfile.save(function(err,result){
+                if(err){
+                    console.log("createFileId");
+                    console.error(err);
+                    res.json({result: 0});
+                    return;
+                }
+
+                FileItem.findById(result._id, (err, fItem) => {
+                    // Handle any possible database errors
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        fItem.filename = result._id+'.mp4';
+                        fItem.filepath = 'upload/'+fItem.filename ;
+                        fItem.save((err, fileitem) => {
+                            if (err) {
+                                res.status(500).send(err)
+                                return;
+                            }
+                            res.json(fileitem);
+                            utbdownload(req.body.utburl,fileitem)
+
+                        });
+                    }
+                });
+
+        });
+
+    });
+
+
 
 })
 
