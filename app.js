@@ -40,7 +40,7 @@ let verifyToken = require('./middleware/verifytoken');
 
 
 // [CONFIGURE ROUTER]
-app.use('/api', //[verifyToken,
+app.use('/api', [verifyToken,
     [
      require('./routes/bookRoute')
     ,require('./routes/chatRoute')
@@ -48,7 +48,7 @@ app.use('/api', //[verifyToken,
     ,require('./routes/fileRoute')
     ,require('./routes/utbRoute')(io)
 ]
-//]
+]
 );
 
 app.use('/openapi',
