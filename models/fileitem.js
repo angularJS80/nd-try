@@ -6,10 +6,14 @@ var uploadSchema = new Schema({
     filename: String,
     fieldname: String,
     originalname: String,
-    encoding: String,
+    encodests: String,
     mimetype: String,
     destination: String,
     size: Number,
+    source:String,
+    regUserId:String,
+    regDate:String,
+    uptDate:String,
 });
 
 module.exports = mongoose.model('upload', uploadSchema);

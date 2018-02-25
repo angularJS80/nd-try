@@ -84,9 +84,44 @@ makeEncodeVideo = function(sorcefile,targetitem){
                         folder: rootPath+'/upload/videos/thumbnail/encode-xvid-640_480/',
                         size: '320x240'
                     });
+
+                FileItem.findById(targetitem._id, (err, fItem) => {
+                    // Handle any possible database errors
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        fItem.encodests = 'C';
+                        fItem.source = sorcefile.filepath;
+                        fItem.uptDate = Date.now();
+                        fItem.save((err, fileitem) => {
+                            if (err) {
+                                res.status(500).send(err)
+                                return;
+                            }
+                            console.log("encode compleat"+ fileitem);
+                        });
+                    }
+                });
             })
 
             .on('start', function(commandLine) {
+                FileItem.findById(targetitem._id, (err, fItem) => {
+                    // Handle any possible database errors
+                    if (err) {
+                        res.status(500).send(err);
+                    } else {
+                        fItem.encodests = 'P';
+                        fItem.uptDate = Date.now();
+                        fItem.save((err, fileitem) => {
+                            if (err) {
+                                res.status(500).send(err)
+                                return;
+                            }
+                            console.log("encode compleat"+ fileitem);
+                        });
+                    }
+                });
+
                 console.log('Spawned Ffmpeg with command: ' + commandLine);
             })
             //.preset('flashvideo')
@@ -133,6 +168,8 @@ router.post('/encodeVideo', function(req, res) {
     targetitem.filename = sorcefile.id +".avi";
     targetitem.originalname = "encXvid"+sorcefile.originalname
     targetitem.filepath = 'upload/encode-xvid-640_480/' + targetitem.filename;
+    targetitem.regDate = Date.now();
+    targetitem.encodests = 'P';
     targetitem.save(function(err,result){
         if(err){
             console.error(err);
@@ -153,6 +190,23 @@ var utbdownload = function(utburl,fileitem){
 
     ytdl(utburl)
         .on('response', function(utbres){
+            FileItem.findById(fileitem._id, (err, fItem) => {
+                // Handle any possible database errors
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    fItem.encodests = 'P';
+                    fItem.uptDate = Date.now();
+                    fItem.save((err, fileitem) => {
+                        if (err) {
+                            res.status(500).send(err)
+                            return;
+                        }
+                        console.log("encode compleat"+ fileitem);
+                    });
+                }
+            });
+
             var ProgressBar = require('progress');
             bar = new ProgressBar('downloading [:bar] :percent :etas', {
                 complete : String.fromCharCode(0x2588),
@@ -174,13 +228,31 @@ var utbdownload = function(utburl,fileitem){
             }
         })
         .on( 'finish', function(){
+            FileItem.findById(fileitem._id, (err, fItem) => {
+                // Handle any possible database errors
+                if (err) {
+                    res.status(500).send(err);
+                } else {
+                    fItem.encodests = 'C';
+                    fItem.uptDate = Date.now();
+                    fItem.save((err, fileitem) => {
+                        if (err) {
+                            res.status(500).send(err)
+                            return;
+                        }
+                        console.log("encode compleat"+ fileitem);
+                    });
+                }
+            });
+
             makeThumbNail(fileitem);
-            if(1==1){ // 업로드시 자동 인코딩 설정에 대한 부분
+            if(1==0){ // 업로드시 자동 인코딩 설정에 대한 부분
 
                 var targetitem = new FileItem();
                 targetitem.filename = fileitem.id +".avi";
                 targetitem.originalname = "encXvid"+fileitem.originalname;
                 targetitem.filepath = 'upload/encode-xvid-640_480/' + targetitem.filename;
+                targetitem.regDate = Date.now();
                 targetitem.save(function(err,result){
                     if(err){
                         console.error(err);
@@ -202,7 +274,7 @@ router.post('/utbupload', function(req, res){
             videoName = info.title.replace('|','').toString('ascii');
             var tempfile = new FileItem();
             tempfile.originalname = videoName;
-
+            tempfile.regDate = Date.now();
             tempfile.save(function(err,result){
                 if(err){
                     console.log("createFileId");
@@ -218,6 +290,9 @@ router.post('/utbupload', function(req, res){
                     } else {
                         fItem.filename = result._id+'.mp4';
                         fItem.filepath = 'upload/'+fItem.filename ;
+                        fItem.uptDate = Date.now();
+                        fItem.source = req.body.utburl;
+                        fItem.encodests = 'P';
                         fItem.save((err, fileitem) => {
                             if (err) {
                                 res.status(500).send(err)

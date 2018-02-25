@@ -9,7 +9,12 @@ module.exports = function(req,res,next) {
         // verifies secret and checks exp
         jwt.verify(token, global.config.jwt_secret, function(err, decoded) {
             if (err) { //failed verification.
-                return res.json({"error": true});
+                return res.json({
+                    "error": {
+                        status:403,
+                        msg:"unverifies token"
+                    }
+                });
             }
             req.decoded = decoded;
             next(); //no error, proceed
@@ -17,7 +22,10 @@ module.exports = function(req,res,next) {
     } else {
         // forbidden without token
         return res.status(403).send({
-            "error": true
+            "error": {
+                status:403,
+                msg:"forbidden error"
+            }
         });
     }
 }
