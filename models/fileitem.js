@@ -14,6 +14,7 @@ var uploadSchema = new Schema({
     regUserId:String,
     regDate:String,
     uptDate:String,
+    token:String,
 });
 
 module.exports = mongoose.model('upload', uploadSchema);

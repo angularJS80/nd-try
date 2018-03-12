@@ -6,14 +6,16 @@ var Ffmpeg = require('fluent-ffmpeg');
 var path = require('path');
 var fs = require("fs"); // 파일시스템 접근을 위한 모듈 호출
 var rootPath = path.join(__dirname, "../");
-var mime = require("mime-types"); // 파일시스템 접근을 위한 모듈 호출
+var mimetypes = require("mime-types"); // 파일시스템 접근을 위한 모듈 호출
+var mime = require("mime");
 
+let jwt = require('jsonwebtoken');
 var storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'upload')
     },
     filename: (req, file, cb) => {
-        cb(null, file.fieldname + '-' + Date.now()+ '.' + mime.extension(file.mimetype) )
+        cb(null, file.fieldname + '-' + Date.now()+ '.' + mimetypes.extension(file.mimetype) )
     }
 });
 
@@ -72,4 +74,43 @@ router.delete('/fileUpload/:file_id', function(req, res){
         });
     })
 });
+
+// GET SINGLE BOOK
+router.get('/fileCheck/:file_id', function(req, res){
+
+    let token = jwt.sign({
+        username: req.params.file_id,
+        password: req.params.file_id
+    }, global.config.jwt_secret, {
+        expiresIn: 5// expires in 1 hour
+    }); // 현재 파일에 국한되게만 사용 가능한 토큰 처리
+
+    FileItem.findOne({_id: req.params.file_id}, function(err, fileitem){
+        if(err) return res.status(500).json({error: err});
+        if(!fileitem) return res.status(404).json({error: 'file not found'});
+
+        fileitem.filepath += "?token="+token;
+        fileitem.token = token;
+        res.json(fileitem);
+    })
+});
+
+// GET SINGLE BOOK
+router.get('/fileDownload/:file_id', function(req, res){
+    FileItem.findOne({_id: req.params.file_id}, function(err, fileitem){
+        if(err) return res.status(500).json({error: err});
+        if(!fileitem) return res.status(404).json({error: 'file not found'});
+        var mimetype = mime.lookup(fileitem.filepath)
+        res.setHeader('Content-type',mimetype);
+
+
+        console.log(fileitem.originalname);
+        //res.setHeader('Content-Disposition', 'attachment;filename*=UTF-8\'\''+fileitem.originalname);
+        res.setHeader("Content-Disposition", "attachment;filename=" + encodeURI(fileitem.originalname));
+        var filestream = fs.createReadStream(fileitem.filepath);
+        filestream.pipe(res);
+    })
+});
+
+
 module.exports = router;
