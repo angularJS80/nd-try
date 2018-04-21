@@ -21,8 +21,15 @@ var storage = multer.diskStorage({
 
 var upload = multer({storage: storage});
 // GET ALL FILELIST
-router.get('/fileList', function(req,res){
-    FileItem.find(function(err, books){
+router.post('/fileList', function(req,res){
+
+    var query = {
+        originalname :{
+            $regex: new RegExp(req.body.searchString, "ig")
+        }
+    }
+
+    FileItem.find(query,function(err, books){
         if(err) return res.status(500).send({error: 'database failure'});
         res.json(books);
     })
