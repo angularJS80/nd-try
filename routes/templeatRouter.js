@@ -26,10 +26,10 @@ router.delete('/template/delete', (req, res) => {
 
 router.put('/test/template/new', (req, res) => {
 
-    const template = new Template({
+   /* const template = new Template({
         templateName: req.body.templateName,
         username: req.body.username
-    });
+    });*/
 
     template.save(function(err){
         if(err){

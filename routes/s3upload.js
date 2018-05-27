@@ -8,7 +8,7 @@ const multerS3 = require('multer-s3');
 
 
 const Template = require('../models/template');
-
+const Scenes = require('../models/scenes');
 
 AWS.config.region = 'ap-northeast-2';
 AWS.config.accessKeyId = process.env.ACCESS_KEY_ID;
@@ -61,22 +61,53 @@ router.post('/s3fileUpload', upload.array('fileItems', 30), (req, res) => {
         });
     }
 
-    const template = new Template({
-        templateName: req.body.templateName,
-        username: req.body.username
-    });
+    let template = new Template();
 
     const mediaFiles = req.files; // 모든 미디어 파일 배열
     const textArr = req.body.sceneTexts; // 모든 씬 텍스트 파일 배열
-console.log(req.body)
-    mediaFiles.map((file) => {
-        let s3Url = `https://s3.ap-northeast-2.amazonaws.com/static-vplate/${Date.now()}-${file.originalname}`;
-        template.templateResources.mediaUrl.push(s3Url);
-    });
+    let textIndex = 0;
 
-    for(let i=0; i<textArr.length; i++) {
-        template.templateResources.texts.push(textArr[i])
-    };
+    // 템플레이트는 여러 씬즈(씬들의 집합) 을 S3 업로드와 클라이언트의 전송된 정보를 받아서 Scenes 에 포함될 Scene 을 파일별로 만들어줘야 한다.
+    //Scenes scenes = new Scenes();
+    mediaFiles.map((file) => {
+        let s3Url = `https://s3.ap-northeast-2.amazonaws.com/static-vplate/${Date.now()}-${file.originalname}`
+
+
+        console.log(file.mimetypes);
+
+
+
+        let ResouceMimeType = "" // 업로드된 파일의 타입을 가져온다
+        let resourceTypeNumber;
+        
+        
+        // 1.리소스에 따른 타입처리
+        if(ResouceMimeType=='이미지'){
+            resourceTypeNumber = 1;
+        }
+        let resourceText = "";
+
+        // 2.텍스트 배열로 받는데 이 텍스타가 어느 신의 소속인지. 불분명하고.
+        if(textArr){
+            let resourceText = textArr[textIndex];
+        }
+
+        // 3.리소스 자체가 어느 신 소속인지 나눠서 들어가야 됨
+        let resource = {resourceType: resourceTypeNumber,	// must be one of those listed in resourceTypes
+            text: resourceText,
+            url: s3Url}
+
+        // 씬 내부에 리소시즈에는 해당씬에 포함될 파일들을 푸시한다
+        // scene.resources.push(resource)
+
+        // 리소시즈가 있는 신을 신즈에 푸시한다
+        // scenes.push(scene);
+
+            //template.scenes.resources.push(resource);
+        textIndex++;
+    });
+    // 신즈를 템플릿에 적용한다 
+    // template.scenes = scenes;
 
     console.log(textArr);
 

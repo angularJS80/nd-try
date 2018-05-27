@@ -26,8 +26,8 @@ router.get('/books/author/:author', function(req, res){
 
 // CREATE BOOK
 router.post('/books', function(req, res){
-    var book = new Book();
-    book.title = req.body.title;
+    var book = new Book()
+     book.title = req.body.title;
     book.author = req.body.author;
     book.published_date = new Date(req.body.published_date);
     book.save(function(err){
