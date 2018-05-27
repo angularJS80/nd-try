@@ -3,7 +3,28 @@ var router = express.Router();
 var Template = require('../models/template');
 
 
-router.put('/template/new', (req, res) => {
+router.get('/template/all', (req, res) => {
+    Template.queryAll(req.user, (err, templates) => {
+        if (err)	handleError(err);
+        return res.status(200).json({ status: 'OK', templates: templates });
+    });
+});
+router.patch('/template/update', (req, res) => {
+    Template.update(req.user, req.body.template, (err) => {
+        if (err)	handleError(err);
+        return res.status(200).json({ status: 'OK' });
+    });
+});
+router.delete('/template/delete', (req, res) => {
+    Template.delete(req.user, req.body.templateID, (err) => {
+        if (err)	handleError(err);
+        return res.status(200).json({ status: 'OK' });
+    });
+});
+
+
+
+router.put('/test/template/new', (req, res) => {
 
     const template = new Template({
         templateName: req.body.templateName,
@@ -21,13 +42,13 @@ router.put('/template/new', (req, res) => {
     });
 
 });
-router.get('/template/all', (req, res) => {
+router.get('/test/template/all', (req, res) => {
     Template.find(function(err, templates){
         if(err) return res.status(500).send({error: 'database failure'});
         res.json(templates);
     })
 });
-router.patch('/template/update', (req, res) => {
+router.patch('/test/template/update', (req, res) => {
 
     Template.update({ _id: req.body.template.templateName }, { $set: req.body.template }, function(err, output){
         if(err) res.status(500).json({ error: 'database failure' });
@@ -38,7 +59,7 @@ router.patch('/template/update', (req, res) => {
 
 
 });
-router.delete('/template/delete', (req, res) => {
+router.delete('/test/template/delete', (req, res) => {
     Template.remove({ _id: req.body.template.templateName }, function(err, output){
         if(err) return res.status(500).json({ error: "database failure" });
 

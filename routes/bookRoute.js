@@ -12,11 +12,7 @@ router.get('/books', function(req,res){
 
 // GET SINGLE BOOK
 router.get('/books/:book_id', function(req, res){
-    Book.findOne({_id: req.params.book_id}, function(err, book){
-        if(err) return res.status(500).json({error: err});
-        if(!book) return res.status(404).json({error: 'book not found'});
-        res.json(book);
-    })
+
 });
 
 // GET BOOK BY AUTHOR
