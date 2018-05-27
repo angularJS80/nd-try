@@ -65,6 +65,15 @@ router.post('/fileUpload', upload.single('file'), (req, res, next) => {
     });
 });
 
+
+
+
+
+
+
+
+
+
 // DELETE FILE
 router.delete('/fileUpload/:file_id', function(req, res){
     FileItem.findOne({_id: req.params.file_id}, function(err, fileitem){
@@ -81,6 +90,20 @@ router.delete('/fileUpload/:file_id', function(req, res){
         });
     })
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // GET SINGLE BOOK
 router.get('/fileCheck/:file_id', function(req, res){

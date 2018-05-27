@@ -20,6 +20,7 @@ db.once('open', function(){
     console.log("Connected to mongod server");
 });
 // CONNECT TO MONGODB SERVER
+
 mongoose.connect('mongodb://localhost:5050/mongodb_tutorial');
 
 
@@ -33,22 +34,24 @@ var server = app.listen(port, function(){
 const SocketIo = require('socket.io'); // 추가
 const socketEvents = require('./soket/chatsocket'); // 추가
 const io = new SocketIo(server); // socket.io와 서버 연결하는 부분
-socketEvents(io); // 아까 만든 이벤트 연결
+socketEvents(io); // 아까 만 이벤트 연결
 
 global.config = require('./middleware/config');
 let verifyToken = require('./middleware/verifytoken');
 
-
 // [CONFIGURE ROUTER]
-app.use('/api', [verifyToken,
+app.use('/api', //[verifyToken,
     [
      require('./routes/bookRoute')
     ,require('./routes/chatRoute')
+    ,require('./routes/templeatRouter')
     ,require('./routes/streamRoute')
     ,require('./routes/fileRoute')
-    ,require('./routes/utbRoute')(io)
+        ,require('./routes/s3upload')
+
+        ,require('./routes/utbRoute')(io)
 ]
-]
+//]
 );
 
 app.use('/openapi',

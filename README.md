@@ -29,3 +29,13 @@ $ node app.js
 링크: https://velopert.com/594
 
 psuh
+
+
+몽고디비 : sudo mongod -port 5050
+
+s3멀터
+sudo env NODE_EMV=development;
+sudo env AWS_ACCESS_KEY_ID=******
+sudo env AWS_SECRET_ACCESS_KEY=*****
+ - > dotenv 페키지 이용
+ -> Root 디렉토리에 환경변수 ".env" 명으로 파일 생성
