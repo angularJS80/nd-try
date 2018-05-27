@@ -8,7 +8,9 @@ const multerS3 = require('multer-s3');
 
 
 const Template = require('../models/template');
-const Scenes = require('../models/scenes');
+const Scene = require('../models/scene');
+
+
 
 AWS.config.region = 'ap-northeast-2';
 AWS.config.accessKeyId = process.env.ACCESS_KEY_ID;
@@ -35,7 +37,7 @@ var storage = multerS3({
         cb(null, newFileName);
     }
 });
-/*
+
 storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, 'upload')
@@ -43,7 +45,7 @@ storage = multer.diskStorage({
     filename: (req, file, cb) => {
         cb(null, file.fieldname + '-' + Date.now()+ '.' + mimetypes.extension(file.mimetype) )
     }
-});*/
+});
 
 const upload = multer({
     storage: storage
@@ -68,23 +70,21 @@ router.post('/s3fileUpload', upload.array('fileItems', 30), (req, res) => {
     let textIndex = 0;
 
     // 템플레이트는 여러 씬즈(씬들의 집합) 을 S3 업로드와 클라이언트의 전송된 정보를 받아서 Scenes 에 포함될 Scene 을 파일별로 만들어줘야 한다.
-    //Scenes scenes = new Scenes();
+    let scenes = [];
     mediaFiles.map((file) => {
         let s3Url = `https://s3.ap-northeast-2.amazonaws.com/static-vplate/${Date.now()}-${file.originalname}`
 
+        let ResouceMimeType = mime.lookup(file.originalname) // 업로드된 파일의 타입을 가져온다
 
-        console.log(file.mimetypes);
-
-
-
-        let ResouceMimeType = "" // 업로드된 파일의 타입을 가져온다
+        console.log(ResouceMimeType); // 어떤 형태로 들어오는지 마임타입으로 확인가능 근데 이건. 클라이언트가 정해서 보내주는게 더 정확. 유효성도 이미지/ 동영상을 한번 걸려서 보내주면 더좋다 
+        
         let resourceTypeNumber;
+
         
-        
-        // 1.리소스에 따른 타입처리
-        if(ResouceMimeType=='이미지'){
-            resourceTypeNumber = 1;
-        }
+        // 1.리소스에 따른 타입처리 // 마임타입 로그를 보고 분기 처리 한다 
+        //if(ResouceMimeType=='Image'){
+        //    resourceTypeNumber = 1;
+        //}
         let resourceText = "";
 
         // 2.텍스트 배열로 받는데 이 텍스타가 어느 신의 소속인지. 불분명하고.
@@ -106,7 +106,7 @@ router.post('/s3fileUpload', upload.array('fileItems', 30), (req, res) => {
             //template.scenes.resources.push(resource);
         textIndex++;
     });
-    // 신즈를 템플릿에 적용한다 
+    // 신즈를 템플릿에 적용한다
     // template.scenes = scenes;
 
     console.log(textArr);
