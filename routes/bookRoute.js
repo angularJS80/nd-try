@@ -9,6 +9,8 @@ router.use(function timeLog(req, res, next) {
 
 // GET ALL BOOKS
 router.get('/books', function(req,res){
+    res.json();
+
     Book.find(function(err, books){
         if(err) return res.status(500).send({error: 'database failure'});
         res.json(books);
