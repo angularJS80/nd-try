@@ -37,7 +37,14 @@ var port = process.env.PORT || 48080;
 
 // [CONFIGURE ROUTER]
 var hellowRoute = require('./routes/hellowRoute');
-app.use('/api', hellowRoute);
+var userRoute = require('./routes/userRoute');
+global.config = require('./middleware/config');
+
+
+let verifyToken = require('./middleware/verifytoken');
+
+app.use('/api',verifyToken, hellowRoute);
+app.use('/openapi', userRoute);
 
 
 // [RUN SERVER]
