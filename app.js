@@ -11,7 +11,7 @@ var cors = require('cors')();
 
 app.use(cors);
 var mongoose    = require('mongoose');
-mongoose.Promise = global.Promise;
+mongoose.Promise = global.Promise; // 몽구스 최신 버전에 추가해야 하는 라인 
 // [ CONFIGURE mongoose ]
 
 // CONNECT TO MONGODB SERVER
