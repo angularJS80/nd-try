@@ -1,27 +1,63 @@
 var express = require('express');
+var Hellow = require('../models/hellow');
 var router = express.Router();
 
-var hellows=[]
-hellows.push({"hellow_id":"japen","hellow":"こんにちは"})
-hellows.push({"hellow_id":"korea","hellow":"안녕하세요."})
-
+//var hellows=[]
+//hellows.push({"hellow_id":"japen","hellow":"こんにちは"})
+//hellows.push({"hellow_id":"korea","hellow":"안녕하세요."})
+//hellows.push({"hellow_id":"usa","hellow":"nice to meet u"})
 
 // GET ALL BOOKS
 router.get('/hellows', function(req,res){
-    res.json(hellows);
-});
-
-router.poer
-
-// GET SINGLE BOOK
-router.get('/hellow/:hellow_id', function(req, res){
-console.log(req.params.hellow_id)
-
-    var rtn =  hellows.filter(function (item) {
-        return item.hellow_id == req.params.hellow_id
+    var hellow =  new Hellow();
+    hellow.find(function(err, hellows){
+        if(err) return res.status(500).send({error: 'database failure'});
+        res.json(hellows);
     })
-
-    res.json(rtn);
 });
+
+router.get('/hellow/:hellow_id', function(req, res){
+    console.log(req.params);
+
+    Hellow.find({hellow_id:req.params.hellow_id}, function(err, hellow){
+        console.log("db result :"+ hellow);
+        if(err) return res.status(500).json({error: err});
+        if(!hellow) return res.status(404).json({error: 'book not found'});
+        res.json(hellow);
+    })
+});
+
+
+router.post('/hellow/save', function(req, res){
+    console.log(req.body)
+    var hellow =  new Hellow();
+
+    console.log(hellow);
+
+    hellow.hellow = req.body.hellow;
+    hellow.hellow_id = req.body.hellow_id;
+
+    hellow.save(function(err){
+        if(err){
+            console.error(err);
+            res.json({result: 0});
+            return;
+        }
+        res.json({result: 1});
+    });
+
+});
+
+
+
+
+/*
+
+router.post('/hellow/add', function(req,res){
+    console.log(req.body)
+    var hellow = req.body
+    hellows.push(hellow);
+    res.json(req.body);
+});*/
 
 module.exports = router;

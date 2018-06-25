@@ -80,7 +80,6 @@ router.put('/books/:book_id', function(req, res){
     });
 */
 });
-
 // DELETE BOOK
 router.delete('/books/:book_id', function(req, res){
     Book.remove({ _id: req.params.book_id }, function(err, output){

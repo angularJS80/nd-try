@@ -10,20 +10,18 @@ var bodyParser  = require('body-parser');
 var cors = require('cors')();
 
 app.use(cors);
-//var mongoose    = require('mongoose');
-
+var mongoose    = require('mongoose');
+mongoose.Promise = global.Promise;
 // [ CONFIGURE mongoose ]
 
 // CONNECT TO MONGODB SERVER
-/*var db = mongoose.connection;
+var db = mongoose.connection;
 db.on('error', console.error);
 db.once('open', function(){
     // CONNECTED TO MONGODB SERVER
     console.log("Connected to mongod server");
-});*/
-
-
-//mongoose.connect('mongodb://211.249.60.229:5050/mongodb_tutorial');
+});
+mongoose.connect('mongodb://localhost:5050/mongodb_tutorial');
 
 // DEFINE MODEL
 //var Book = require('./models/book');
@@ -38,14 +36,16 @@ var port = process.env.PORT || 48080;
 // [CONFIGURE ROUTER]
 var hellowRoute = require('./routes/hellowRoute');
 var userRoute = require('./routes/userRoute');
+var heroRoute = require('./routes/heroRoute');
 global.config = require('./middleware/config');
 
 
 let verifyToken = require('./middleware/verifytoken');
 
-app.use('/api',verifyToken, hellowRoute);
+app.use('/api'//,verifyToken
+    , hellowRoute);
 app.use('/openapi', userRoute);
-
+app.use('/hero',verifyToken, heroRoute);
 
 // [RUN SERVER]
 var server = app.listen(port, function(){
