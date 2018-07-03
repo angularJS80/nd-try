@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var HeroSchema = require('../models/heroSchema');
 
 
 
@@ -19,16 +20,40 @@ var heros=[
 
 // GET ALL BOOKS
 router.get('/getList', function(req,res){
-    res.json(heros);
+    
+    HeroSchema.find(function (err,data) {
+        console.log(data);
+        res.json(data);
+    });
+    //res.json(heros);
 });
 
 router.post('/addHero', function(req,res){
-    var myobj = req.body;
-    
-    
-    console.log(req.body)
-    res.json(req.body);
+    var hero = req.body;
+    var heroSchema = new HeroSchema(hero);
+    //heroSchema.id = hero.id;
+    //heroSchema.name = hero.name;
+    console.log(hero);
+
+    heroSchema.save(function(err){
+        if(err){
+            console.error(err);
+            res.json({result: 0});
+            return;
+        }
+        res.json({result: 1});
+    });
+
 });
+
+router.get('/removeHero/:_id', function(req, res){
+    console.log(req.params);
+    HeroSchema.remove({ _id: req.params._id }, function(err, output){
+        if(err) return res.status(500).json({ error: "database failure" });
+        res.status(204).end();
+    })
+});
+
 
 
 

@@ -42,10 +42,12 @@ global.config = require('./middleware/config');
 
 let verifyToken = require('./middleware/verifytoken');
 
-app.use('/api'//,verifyToken
-    , hellowRoute);
-app.use('/openapi', userRoute);
+app.use('/api',verifyToken, hellowRoute);
 app.use('/hero',verifyToken, heroRoute);
+
+
+app.use('/openapi', userRoute);
+
 
 // [RUN SERVER]
 var server = app.listen(port, function(){
