@@ -37,6 +37,7 @@ var port = process.env.PORT || 48080;
 var hellowRoute = require('./routes/hellowRoute');
 var userRoute = require('./routes/userRoute');
 var heroRoute = require('./routes/heroRoute');
+var boardRoute = require('./routes/board/index');
 global.config = require('./middleware/config');
 
 
@@ -48,8 +49,20 @@ app.use('/hero',verifyToken, heroRoute);
 
 app.use('/openapi', userRoute);
 
+app.use('/openapi/board', boardRoute);
 
 // [RUN SERVER]
 var server = app.listen(port, function(){
  console.log("Express server has started on port " + port)
+});
+
+
+const io = require('socket.io')(server);
+
+io.on('connection', function(socket) {
+    console.log("Sssssssssssssssss"+socket.id)
+    socket.on('SEND_MESSAGE', function(data) {
+        io.emit('MESSAGE', data)
+    });
+
 });
