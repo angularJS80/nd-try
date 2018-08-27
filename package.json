@@ -14,7 +14,7 @@
     "aws-sdk": "^2.222.1",
     "dotenv": "^5.0.1",
     "multer-s3": "^2.7.0",
-    "body-parser": "^1.15.0",so
+    "body-parser": "^1.15.0",
     "cors": "^2.8.4",
     "express": "^4.13.4",
     "fluent-ffmpeg": "^2.1.2",
