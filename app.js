@@ -2,44 +2,34 @@
 var express     = require('express');
 var app         = express();
 var bodyParser  = require('body-parser');
-var mongoose    = require('mongoose');
+var mongodbConnection = require('./middleware/mongodbConnection')
 var cors = require('cors')();
+var verifyToken = require('./middleware/verifytoken');
+var swagger = require('./middleware/swagger');
+var socket = require('./middleware/socket');
+var server = require('./middleware/server');
 
-app.use(cors);
 // [CONFIGURE APP TO USE bodyParser]
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: true  }));
 app.use(bodyParser.json());
 
-app.use("/api/upload/", express.static(__dirname + '/upload/videos/thumbnail/'));
+// [CONFIGURE Cors]
+app.use(cors);
 
-// [ CONFIGURE mongoose ]
-var db = mongoose.connection;
-db.on('error', console.error);
-db.once('open', function(){
-    // CONNECTED TO MONGODB SERVER
-    console.log("Connected to mongod server");
-});
-// CONNECT TO MONGODB SERVER
+// [CONFIGURE Db Connection]
+mongodbConnection.mongodbConnect();
 
-mongoose.connect('mongodb://localhost:5050/mongodb_tutorial');
+// [CONFIGURE Swagger]
+swagger.swaggerInit(app);
 
+// [CONFIGURE Server]
+var server = server.startServer(app);
 
-// [CONFIGURE SERVER PORT]
-var port = process.env.PORT || 38080; // [CONFIGURE SERVER PORT]
-// [RUN SERVER]
-var server = app.listen(port, function(){
-    console.log("Express server has started on port " + port)
-});
-
-const SocketIo = require('socket.io'); // 추가
-const socketEvents = require('./soket/chatsocket'); // 추가
-const io = new SocketIo(server); // socket.io와 서버 연결하는 부분
-socketEvents(io); // 아까 만 이벤트 연결
-
+// [CONFIGURE Socket Io]
+var io = socket.chatSoketInit(server);
 global.config = require('./middleware/config');
-let verifyToken = require('./middleware/verifytoken');
 
-// [CONFIGURE ROUTER]
+// [CONFIGURE ROUTER]라우터이외 모듈화 
 app.use('/api', //[verifyToken,
     [
      require('./routes/bookRoute')
@@ -47,9 +37,8 @@ app.use('/api', //[verifyToken,
     ,require('./routes/templeatRouter')
     ,require('./routes/streamRoute')
     ,require('./routes/fileRoute')
-        ,require('./routes/s3upload')
-
-        ,require('./routes/utbRoute')(io)
+    ,require('./routes/s3upload')
+    ,require('./routes/utbRoute')(io)
 ]
 //]
 );
@@ -57,4 +46,8 @@ app.use('/api', //[verifyToken,
 app.use('/openapi',
     require('./routes/userRoute')
 );
+
+
+// [CONFIGURE Static Url]
+app.use("/api/upload/", express.static(__dirname + '/upload/videos/thumbnail/'));
 

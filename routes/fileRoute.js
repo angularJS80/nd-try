@@ -136,7 +136,7 @@ router.get('/fileDownload/:file_id', function(req, res){
 
         console.log(fileitem.originalname);
         //res.setHeader('Content-Disposition', 'attachment;filename*=UTF-8\'\''+fileitem.originalname);
-        res.setHeader("Content-Disposition", "attachment;filename=" + encodeURI(fileitem.originalname));
+        res.setHeader("Content-Disposition", "attachment;filename=" + encodeURI(fileitem.originalname)+".mp4");
         var filestream = fs.createReadStream(fileitem.filepath);
         filestream.pipe(res);
     })

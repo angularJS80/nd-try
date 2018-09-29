@@ -12,17 +12,18 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.222.1",
-    "dotenv": "^5.0.1",
-    "multer-s3": "^2.7.0",
     "body-parser": "^1.15.0",
     "cors": "^2.8.4",
+    "dotenv": "^5.0.1",
     "express": "^4.13.4",
     "fluent-ffmpeg": "^2.1.2",
     "gm": "^1.23.1",
+    "googleapis": "^27.0.0",
     "jsonwebtoken": "^8.1.1",
     "jwt-secret": "^1.1.1",
     "mongoose": "^4.4.5",
     "multer": "^1.3.0",
+    "multer-s3": "^2.7.0",
     "progress": "^2.0.0",
     "socket.io": "^2.0.4",
     "socket.io-client": "^2.0.4",
@@ -30,5 +31,8 @@
     "thumbnail": "^0.1.9",
     "vid-streamer": "^1.0.0",
     "ytdl-core": "^0.20.1"
+  },
+  "devDependencies": {
+    "express-swagger-generator": "^1.1.9"
   }
 }
