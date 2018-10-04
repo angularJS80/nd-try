@@ -125,7 +125,7 @@ router.get('/fileCheck/:file_id', function(req, res){
     })
 });
 
-// GET SINGLE BOOKb
+// GET SINGLE BOOK
 router.get('/fileDownload/:file_id', function(req, res){
     FileItem.findOne({_id: req.params.file_id}, function(err, fileitem){
         if(err) return res.status(500).json({error: err});
