@@ -39,7 +39,6 @@ router.post('/authenticate', function(req, res){
             expiresIn: global.config.refreshTokenLife
         });
         global.config.allTokens[token]={refreshToken:refreshToken,user:user};
- 
 
 
         res.json({error:false, token: token,refreshToken: refreshToken});

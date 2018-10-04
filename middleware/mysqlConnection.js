@@ -15,12 +15,12 @@ exports.mysqlSequelize = function() {
     }
     console.log("#####################");
     fs.readdirSync(sqlModelsDir)
-        .forEach(file => {
-            console.log(file);
+      .forEach(file => {
+          console.log(file);
             const model = sequelize['import'](path.join(sqlModelsDir, file));
 
-            _db[model.name] = model;
-        });
+          _db[model.name] = model;
+      });
 
     Object.keys(_db).forEach(modelName => {
         console.log(_db[modelName].associate);
@@ -33,5 +33,5 @@ exports.mysqlSequelize = function() {
     _db.Sequelize = Sequelize;
     sequelize.sync();
     console.log("connected to mysql Server;")
-    return _db;
+  return _db;
 }
