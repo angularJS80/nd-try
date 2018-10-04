@@ -125,7 +125,7 @@ router.get('/fileCheck/:file_id', function(req, res){
     })
 });
 
-// GET SINGLE BOOK
+// GET SINGLE BOOKb
 router.get('/fileDownload/:file_id', function(req, res){
     FileItem.findOne({_id: req.params.file_id}, function(err, fileitem){
         if(err) return res.status(500).json({error: err});
@@ -136,7 +136,12 @@ router.get('/fileDownload/:file_id', function(req, res){
 
         console.log(fileitem.originalname);
         //res.setHeader('Content-Disposition', 'attachment;filename*=UTF-8\'\''+fileitem.originalname);
-        res.setHeader("Content-Disposition", "attachment;filename=" + encodeURI(fileitem.originalname)+".mp4");
+        var fileExt = ".mp3"
+        if(fileitem.filepath.indexOf("mp3")>0){
+            fileExt = ".mp3";
+        };
+
+        res.setHeader("Content-Disposition", "attachment;filename=" + encodeURI(fileitem.originalname)+fileExt);
         var filestream = fs.createReadStream(fileitem.filepath);
         filestream.pipe(res);
     })

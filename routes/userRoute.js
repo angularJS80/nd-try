@@ -18,6 +18,7 @@ router.post('/register', function(req, res){
 });
 
 router.post('/authenticate', function(req, res){
+    console.log("#################################refreshToken :");
     let data = {
         username: req.body.username,
         password: req.body.password
@@ -31,11 +32,38 @@ router.post('/authenticate', function(req, res){
         }
         console.log(user);
         let token = jwt.sign(user, global.config.jwt_secret, {
-            expiresIn: 1440 // expires in 1 hour
+            expiresIn: global.config.tokenLife // expires in 1 hour
         });
-        res.json({error:false, token: token});
+
+        let refreshToken = jwt.sign(user, global.config.refreshTokenSecret, {
+            expiresIn: global.config.refreshTokenLife
+        });
+        global.config.allTokens[token]={refreshToken:refreshToken,user:user};
+ 
+
+
+        res.json({error:false, token: token,refreshToken: refreshToken});
     })
 });
+
+router.post('/refreshToken', function(req, res){
+
+    var token = req.body.token || req.query.token || req.headers['authorization'];
+    let user = global.config.allTokens[token].user;
+
+    token = global.config.allTokens[token].refreshToken
+    console.log(user);
+    let refreshToken = jwt.sign(user, global.config.jwt_secret, {
+        expiresIn: global.config.refreshTokenLife // expires in 1 hour
+    });
+
+    global.config.allTokens[token]={refreshToken:refreshToken,user:user};
+
+
+    res.json({error:false, token: token,refreshToken: refreshToken});
+});
+
+
 
 
 module.exports = router;

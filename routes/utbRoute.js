@@ -255,6 +255,95 @@ makeEncodeVideo = function(sorcefile,targetitem){
 
 }
 
+makeEncodeMp3 = function(sorcefile,targetitem){
+    console.log(targetitem);
+        var percentage = 0;
+        var infs = fs.createReadStream(rootPath+sorcefile.filepath);
+        //var self = this;
+        var command = Ffmpeg(infs)
+        var command =  Ffmpeg(rootPath+sorcefile.filepath)
+        var endTime = "";
+        var percentage = "0";
+        command.clone()
+            .ffprobe(0,function(err, data) {
+                console.log("err" + err);
+                console.log("data" + data.streams[0].duration);
+                endTime = data.streams[0].duration;
+                //console.log('file1 metadata:');
+                //console.dir(data);
+            });
+        http://localhost:38080/api/upload/encode-xvid-640_480/5a7ed772d5960c028fb83f91.mp4_1.png
+            /*
+             command.clone()
+             .size('320x200')
+             .save(rootPath+'/upload/videos/output-small.mp4');*/
+            command.clone()
+                .audioCodec('libmp3lame')
+                .format('mp3')
+                //.size('720x480')
+                //.addOption('-qscale', '5') // xvid 인코딩시 엄청깨짐으로 이옵션을 꼭줘야 함.
+                //.autopad ( 'black' )
+                //.inputFPS(29.7)
+                //.outputFps(24)
+                .on('end', function(stdout, stderr) {
+                    console.log('Transcoding succeeded !');
+                  
+                    FileItem.findById(targetitem._id, (err, fItem) => {
+                        // Handle any possible database errors
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            fItem.encodests = 'C';
+                            fItem.source = sorcefile.filepath;
+                            fItem.uptDate = Date.now();
+                            fItem.save((err, fileitem) => {
+                                if (err) {
+                                    res.status(500).send(err)
+                                    return;
+                                }
+                                console.log("encode compleat mp3"+ fileitem);
+                            });
+                        }
+                    });
+                })
+
+                .on('start', function(commandLine) {
+                    FileItem.findById(targetitem._id, (err, fItem) => {
+                        // Handle any possible database errors
+                        if (err) {
+                            res.status(500).send(err);
+                        } else {
+                            fItem.encodests = 'P';
+                            fItem.uptDate = Date.now();
+                            fItem.save((err, fileitem) => {
+                                if (err) {
+                                    res.status(500).send(err)
+                                    return;
+                                }
+                                console.log("encode compleat"+ fileitem);
+                            });
+                        }
+                    });
+
+                    console.log('Spawned Ffmpeg with command: ' + commandLine);
+                })
+                //.preset('flashvideo')
+                .on('progress', function(progress) {
+                    if(percentage != parseInt(progress.percent).toString()){
+                        percentage = parseInt(progress.percent).toString()
+                        console.log(targetitem._id+" : "+percentage);
+                        io.emit('new-prog-msg'+targetitem._id,
+                            //file_id:req.body.file_id,
+                            percentage
+                        );
+                    }
+
+                })
+                .save(rootPath+'/upload/mp3/'+targetitem.filename)
+
+            ;
+    }
+
 
 router.post('/encodeVideo', function(req, res) {
 
@@ -272,11 +361,31 @@ router.post('/encodeVideo', function(req, res) {
         }
         res.json(result);
         makeEncodeVideo(sorcefile,result);
-
     });
-
-
 })
+
+router.post('/encodeMp3file', function(req, res) {
+
+    var sorcefile = new FileItem(req.body);
+    var targetitem = new FileItem();
+    targetitem.filename = sorcefile.id +".mp3";
+    targetitem.originalname = "mp3"+sorcefile.originalname+".mp3"
+    targetitem.filepath = 'upload/mp3/' + targetitem.filename;
+    targetitem.regDate = Date.now();
+    targetitem.encodests = 'P';
+    targetitem.save(function(err,result){
+        if(err){
+            console.error(err);
+            return;
+        }
+        res.json(result);
+        makeEncodeMp3(sorcefile,result);
+    });
+})
+
+
+
+
 
 
 async function googleDriveUpload(file) {

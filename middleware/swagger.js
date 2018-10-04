@@ -1,6 +1,5 @@
 
-var swaggeroption =  {
-
+var _swaggeroption =  {
     swaggerDefinition: {
         info: {
             description: 'This is a sample server',
@@ -30,6 +29,6 @@ var swaggeroption =  {
 
 exports.swaggerInit= function(app) {
     const expressSwagger = require('express-swagger-generator')(app);
-    expressSwagger(swaggeroption)
+    expressSwagger(_swaggeroption)
 
 }
