@@ -1,0 +1,12 @@
+{
+  "development": {
+    "username": "username",
+    "password": "password",
+    "database": "promom",
+    "host": "ec2-52-194-130-175.ap-northeast-1.compute.amazonaws.com",
+    "port": 3306,
+    "dialect": "mysql",
+    "pool": { "max": 5, "min": 0, "idle": 10000 }
+  }
+
+}
