@@ -1,5 +1,7 @@
 // socket io
-module.exports = function(io) {
+const SocketIo = require('socket.io'); // 추가
+exports.chatSoketInit  = function(server) {
+    io = new SocketIo(server); // socket.io와 서버 연결하는 부분
     io.on('connection', function (socket) {
         console.log('User connected');
         socket.on('disconnect', function() {
@@ -10,9 +12,5 @@ module.exports = function(io) {
             io.emit('new-msg', data);
         });
     });
+    return io;
 }
-
-
-
-
-
