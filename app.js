@@ -21,7 +21,7 @@ app.use(cors);
 mongodbConnection.mongodbConnect();
 
 // [CONFIGURE Mysql Connection]
-mysqlConnection.mysqlSequelize();
+//mysqlConnection.mysqlSequelize();
 
 
 // [CONFIGURE Swagger]

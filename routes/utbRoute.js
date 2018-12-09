@@ -17,11 +17,14 @@ const TOKEN_PATH = 'token.json';
 
 var oAuth2Client;
 var drive;
+/*
+
 fs.readFile('credentials.json', (err, content) => {
     if (err) return console.log('Error loading client secret file:', err);
     // Authorize a client with credentials, then call the Google Drive API.
     authorize(JSON.parse(content), setDrive);
 });
+*/
 
 function setDrive(auth){
      drive = google.drive({version: 'v3', auth});
@@ -387,48 +390,48 @@ router.post('/encodeMp3file', function(req, res) {
 
 
 
-
-async function googleDriveUpload(file) {
-    var folderId = '1vPhBiGcfY93t2LWNZ84QB9TBBtkw6UiQ';
-    var fileMetadata = {
-        'name': file.originalname,
-        parents: [folderId]
-    };
-    var media = {
-        mimeType: 'video/mp4',
-        body: fs.createReadStream(rootPath+file.filepath)
-    };
-
-    const res = await drive.files.create({
-        resource: fileMetadata,
-        media: media,
-        fields: 'id'
-    }, function (err, file) {
-        if (err) {
-            // Handle error
-            console.error(err);
-        } else {
-            console.log('File Id: ', file.id);
-        }
-    });
-    console.log(res.data);
-
-  /*  const res = await drive.files.create({
-        requestBody: {
-            name: file.originalname,
-            mimeType: 'video/mp4'
-        },
-        media: {
+    /*
+    async function googleDriveUpload(file) {
+        var folderId = '1vPhBiGcfY93t2LWNZ84QB9TBBtkw6UiQ';
+        var fileMetadata = {
+            'name': file.originalname,
+            parents: [folderId]
+        };
+        var media = {
             mimeType: 'video/mp4',
             body: fs.createReadStream(rootPath+file.filepath)
-        }
-    });
-*/
+        };
+
+        const res = await drive.files.create({
+            resource: fileMetadata,
+            media: media,
+            fields: 'id'
+        }, function (err, file) {
+            if (err) {
+                // Handle error
+                console.error(err);
+            } else {
+                console.log('File Id: ', file.id);
+            }
+        });
+        console.log(res.data);
+
+       const res = await drive.files.create({
+            requestBody: {
+                name: file.originalname,
+                mimeType: 'video/mp4'
+            },
+            media: {
+                mimeType: 'video/mp4',
+                body: fs.createReadStream(rootPath+file.filepath)
+            }
+        });
+
 
 
 
 }
-
+*/
 
 
 
