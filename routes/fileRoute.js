@@ -136,7 +136,7 @@ router.get('/fileDownload/:file_id', function(req, res){
 
         console.log(fileitem.originalname);
         //res.setHeader('Content-Disposition', 'attachment;filename*=UTF-8\'\''+fileitem.originalname);
-        var fileExt = ".mp3"
+        var fileExt = ".mp4";
         if(fileitem.filepath.indexOf("mp3")>0){
             fileExt = ".mp3";
         };
