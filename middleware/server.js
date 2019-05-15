@@ -1,4 +1,4 @@
-var port = process.env.PORT || 38080; // [CONFIGURE SERVER PORT]
+var port = process.env.PORT || 8080; // [CONFIGURE SERVER PORT]
 var _server;
 // [RUN SERVER]
 exports.startServer  = function(app) {
