@@ -10,5 +10,5 @@ exports.mongodbConnect = function() {
     });
 // CONNECT TO MONGODB SERVER
 
-    mongoose.connect('mongodb://172.31.33.28:25050/mongodb_tutorial');
+    mongoose.connect('mongodb://172.31.34.84:25050/mongodb_tutorial');
 }
